@@ -1,7 +1,10 @@
 import React, { useContext } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { AuthContext } from "../../state/with-auth";
-import { GET_BADGES_VERSIONS, INSERT_CANDIDATURE_PROPOSAL } from "../../state/queries-mutations.graphql";
+import {
+  GET_BADGES_VERSIONS,
+  INSERT_CANDIDATURE_PROPOSAL
+} from "../../state/queries-mutations.graphql";
 import { useNavigate } from "react-router-dom";
 import {
   Typography,
@@ -111,7 +114,11 @@ const AddCandidatureProposal = ({ selectedEngineer }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <FormControl variant="outlined" fullWidth error={!!errors.selectedBadgeVersion}>
+            <FormControl
+              variant="outlined"
+              fullWidth
+              error={!!errors.selectedBadgeVersion}
+            >
               <InputLabel id="badgeVersion-label">
                 Select a Badge Version
               </InputLabel>
@@ -146,7 +153,9 @@ const AddCandidatureProposal = ({ selectedEngineer }) => {
               error={!!errors.proposalDescription}
             />
             {errors.proposalDescription && (
-              <FormHelperText error>Please enter a proposal description.</FormHelperText>
+              <FormHelperText error>
+                Please enter a proposal description.
+              </FormHelperText>
             )}
           </Grid>
           <Grid item xs={12}>

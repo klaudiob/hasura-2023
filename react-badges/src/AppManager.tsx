@@ -9,6 +9,7 @@ import GroupWorkIcon from "@mui/icons-material/GroupWork";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import RuleIcon from "@mui/icons-material/Rule";
 import ApprovalRejectionIssues from "./Managers/ApprovalRejectionIssues";
+import "./App.css";
 
 const managerMenuItems = [
   {
@@ -37,7 +38,7 @@ const AppManager: React.FC = () => (
   <AppEntrypoint
     icon={<ManagerIcon />}
     title="Manager"
-    defaultRoute="managers"
+    defaultRoute="managers/badges"
     drawerContents={[<DrawerMenu title="Manager:" items={managerMenuItems} />]}
     mobileUtils={managerMenuItems}
     routes={[

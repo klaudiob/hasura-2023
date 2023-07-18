@@ -15,86 +15,11 @@ import Modal from "@mui/material/Modal";
 import Fade from "@mui/material/Fade";
 import Typography from "@mui/material/Typography";
 import TextArea from "../../UI/TextArea";
-
-const GET_CANDIDATURE_PROPOSALS_BY_ENGINEERS = gql`
-  query MyQuery($isApproved: Boolean!) {
-    engineer_to_manager_badge_candidature_proposals(
-      where: {
-        manager_badge_candidature_proposal_responses: {
-          is_approved: { _eq: $isApproved }
-        }
-      }
-    ) {
-      id
-      created_by
-      badge_version
-      manager
-      proposal_description
-      badges_version {
-        title
-      }
-      user {
-        name
-      }
-      userByManager {
-        name
-      }
-      manager_badge_candidature_proposal_responses {
-        response_id
-      }
-    }
-  }
-`;
-
-const APPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER = gql`
-  mutation managerProposalResponse(
-    $is_approved: Boolean!
-    $disapproval_motivation: String!
-    $proposal_id: Int!
-  ) {
-    update_manager_badge_candidature_proposal_response(
-      where: { proposal_id: { _eq: $proposal_id } }
-      _set: {
-        is_approved: $is_approved
-        disapproval_motivation: $disapproval_motivation
-      }
-    ) {
-      returning {
-        is_approved
-        disapproval_motivation
-        proposal_id
-        response_id
-        created_by
-        created_at
-      }
-    }
-  }
-`;
-
-const DISAPPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER = gql`
-  mutation managerProposalResponse(
-    $is_approved: Boolean!
-    $disapproval_motivation: String!
-    $proposal_id: Int!
-  ) {
-    update_manager_badge_candidature_proposal_response(
-      where: { proposal_id: { _eq: $proposal_id } }
-      _set: {
-        is_approved: $is_approved
-        disapproval_motivation: $disapproval_motivation
-      }
-    ) {
-      returning {
-        is_approved
-        disapproval_motivation
-        proposal_id
-        response_id
-        created_by
-        created_at
-      }
-    }
-  }
-`;
+import {
+  GET_CANDIDATURE_PROPOSALS_BY_ENGINEERS,
+  APPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER,
+  DISAPPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER
+} from "../../state/queries-mutations.graphql";
 
 const style = {
   position: "absolute",
@@ -112,6 +37,8 @@ const CandidatureProposals = () => {
   const [open, setOpen] = useState(false);
   const [textAreaValue, setTextAreaValue] = useState("");
   const [isApprovedFilter, setIsApprovedFilter] = useState(true);
+  const [isApprovedValue, setIsApprovedValue] = useState(true);
+  const currentTimestamp = new Date().toISOString();
 
   const { managerId } = useContext(AuthContext);
   const handleOpen = () => setOpen(true);
@@ -127,22 +54,35 @@ const CandidatureProposals = () => {
   );
 
   useEffect(() => {
+    if (data) {
+      const approvalValue =
+        data.engineer_to_manager_badge_candidature_proposals[0]
+          ?.manager_badge_candidature_proposal_responses[0]?.is_approved;
+      console.log(approvalValue);
+      setIsApprovedValue(approvalValue);
+    }
+  }, [data]);
+
+  useEffect(() => {
     refetch({ isApproved: isApprovedFilter });
   }, [isApprovedFilter]);
 
   const [approveResponse, { data: data2, loading: loading2, error: error2 }] =
     useMutation(APPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER);
 
-  const [disapproveResponse] = useMutation(
-    DISAPPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER
-  );
+  const [
+    disapproveResponse,
+    { data: data3, loading: loading3, error: error3 }
+  ] = useMutation(DISAPPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER);
 
   const onApproveClick = (proposalId) => {
     approveResponse({
       variables: {
         proposal_id: proposalId,
         is_approved: true,
-        disapproval_motivation: null
+        disapproval_motivation: null,
+        created_by: managerId,
+        created_at: currentTimestamp
       }
     });
     setTextAreaValue("");
@@ -153,7 +93,9 @@ const CandidatureProposals = () => {
       variables: {
         proposal_id: proposalId,
         is_approved: false,
-        disapproval_motivation: textAreaValue
+        disapproval_motivation: textAreaValue,
+        created_by: managerId,
+        created_at: currentTimestamp
       }
     });
   };
@@ -193,7 +135,12 @@ const CandidatureProposals = () => {
               <TableCell align="right">Badge Title</TableCell>
               <TableCell align="right">Proposal Description</TableCell>
               <TableCell align="right">Manager</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell
+                align="right"
+                style={{ display: isApprovedValue ? "block" : "none" }}
+              >
+                Actions
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -217,7 +164,10 @@ const CandidatureProposals = () => {
                     <TableCell align="right">
                       {item.userByManager.name}
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell
+                      align="right"
+                      style={{ display: isApprovedValue ? "block" : "none" }}
+                    >
                       <Button
                         variant="contained"
                         color="success"

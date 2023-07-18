@@ -40,4 +40,87 @@ export const GET_BADGES_VERSIONS = gql`
   }
 `;
 
+export const GET_CANDIDATURE_PROPOSALS_BY_ENGINEERS = gql`
+  query MyQuery($isApproved: Boolean!) {
+    engineer_to_manager_badge_candidature_proposals(
+      where: {
+        manager_badge_candidature_proposal_responses: {
+          is_approved: { _eq: $isApproved }
+        }
+      }
+    ) {
+      id
+      created_by
+      badge_version
+      manager
+      proposal_description
+      badges_version {
+        title
+      }
+      user {
+        name
+      }
+      userByManager {
+        name
+      }
+      manager_badge_candidature_proposal_responses {
+        response_id
+        is_approved
+      }
+    }
+  }
+`;
 
+export const APPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER = gql`
+  mutation managerProposalResponse(
+    $is_approved: Boolean!
+    $disapproval_motivation: String!
+    $proposal_id: Int!
+    $created_by: Int!
+    $created_at: timestamp!
+  ) {
+    insert_manager_badge_candidature_proposal_response(objects: {
+      created_by: $created_by, 
+      disapproval_motivation: $disapproval_motivation, 
+      is_approved: $is_approved, 
+      proposal_id: $proposal_id, 
+      created_at: $created_at
+      }) {
+      returning {
+        is_approved
+        disapproval_motivation
+        proposal_id
+        response_id
+        created_by
+        created_at
+      }
+    }
+  }
+`;
+
+export const DISAPPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER = gql`
+  mutation managerProposalResponse(
+    $is_approved: Boolean!
+    $disapproval_motivation: String!
+    $proposal_id: Int!
+    $created_at: timestamp!
+    $created_by: Int!
+  ) {
+    insert_manager_badge_candidature_proposal_response(objects: {
+      created_by: $created_by, 
+      disapproval_motivation: $disapproval_motivation, 
+      is_approved: $is_approved, 
+      proposal_id: $proposal_id, 
+      created_at: $created_at
+      }) {
+      returning {
+        is_approved
+        disapproval_motivation
+        proposal_id
+        response_id
+        created_by
+        created_at
+      }
+    }
+  }
+`;
