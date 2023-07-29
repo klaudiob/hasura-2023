@@ -2,6 +2,7 @@ DROP FUNCTION IF EXISTS "get_issuing_requests_for_manager";
 DROP FUNCTION IF EXISTS "insert_issuing_request";
 DROP FUNCTION IF EXISTS "insert_badge_candidature_request";
 DROP FUNCTION IF EXISTS "get_pending_proposals_for_engineer";
+DROP FUNCTION IF EXISTS "get_engineers_pending_proposals_for_managers";
 
 DROP PROCEDURE IF EXISTS "insert_candidature_request";
 

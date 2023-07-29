@@ -38,6 +38,218 @@ export const GET_BADGES_VERSIONS = gql`
       title
     }
   }
+  `;
+
+  export const GET_BADGES = gql`
+  query MyQuery {
+    badges_versions {
+      title
+      description
+      created_at
+    }
+    badges_versions_last {
+      title
+      description
+      created_at
+    }
+  }
 `;
 
+export const GET_ISSUING_REQUESTS = gql`
+  mutation MyMutation($managerId: Int!) {
+    get_issuing_requests_for_manager(args: { managerid: $managerId }) {
+      badge_id
+      badge_title
+      candidature_evidences
+      engineer_id
+      engineer_name
+      id
+      is_issued
+      manager_id
+      badge_description
+      badge_version
+      created_at
+    }
+  }
+`;
 
+export const REJECT_ISSUING_REQUEST = gql`
+  mutation RejectIssuingRequest($id: Int!, $rejectionDescription: String!) {
+    update_issuing_requests(
+      _set: {
+        is_approved: false
+        disapproval_motivation: $rejectionDescription
+      }
+      where: { request_id: { _eq: $id } }
+    ) {
+      returning {
+        disapproval_motivation
+        id
+        is_approved
+        request_id
+      }
+    }
+  }
+`;
+
+export const APPROVE_ISSUING_REQUEST = gql`
+  mutation ApproveIssuingRequest($id: Int!, $isApproved: Boolean!) {
+    update_issuing_requests(
+      _set: { is_approved: $isApproved, disapproval_motivation: null }
+      where: { request_id: { _eq: $id } }
+    ) {
+      returning {
+        id
+        is_approved
+        request_id
+      }
+    }
+  }
+`;
+
+export const GET_CANDIDATURE_PROPOSALS_BY_ENGINEERS = gql`
+  query MyQuery($isApproved: Boolean!,$managerId: Int!) {
+    engineer_to_manager_badge_candidature_proposals(
+      where: {
+        _and: 
+        [{
+        manager_badge_candidature_proposal_responses: {
+          is_approved: { _eq: $isApproved }
+        }
+        },
+        {
+        manager: { _eq: $managerId }
+        }
+        ]
+      }
+    ) {
+      id
+      created_by
+      badge_version
+      manager
+      proposal_description
+      badges_version {
+        title
+      }
+      user {
+        name
+      }
+      userByManager {
+        name
+      }
+      manager_badge_candidature_proposal_responses {
+        response_id
+        is_approved
+        proposal_id
+        disapproval_motivation
+      }
+    }
+  }
+`;
+
+export const GET_ENGINEERS_PENDING_PROPOSALS = gql`
+mutation PendingProposals($managerId: Int!) {
+  get_engineers_pending_proposals_for_managers(args: {managerid: $managerId}) {
+  id
+    badge_id
+    badge_version
+    created_by
+    proposal_description
+    userByManager {
+      name
+      id
+    }
+    user {
+      name
+    }
+    badges_version {
+        title
+    }
+  }
+}
+`;
+
+export const APPROVE_DISAPPROVE_ENGINEER_CANDIDATURE_PROPOSAL_BY_MANAGER = gql`
+  mutation managerProposalResponse(
+    $is_approved: Boolean!
+    $disapproval_motivation: String!
+    $proposal_id: Int!
+    $created_by: Int!
+    $created_at: timestamp!
+  ) {
+    insert_manager_badge_candidature_proposal_response(objects: {
+      created_by: $created_by, 
+      disapproval_motivation: $disapproval_motivation, 
+      is_approved: $is_approved, 
+      proposal_id: $proposal_id, 
+      created_at: $created_at
+      }) {
+      returning {
+        is_approved
+        disapproval_motivation
+        proposal_id
+        response_id
+        created_by
+        created_at
+      }
+    }
+  }
+`;
+
+export const GET_CANDIDATURE_PROPOSALS_BY_MANAGER = gql`
+  query ManagerProposals($managerId: Int!){
+    manager_to_engineer_badge_candidature_proposals(where: {created_by: {_eq: $managerId}}) {
+      badge_id
+      badge_version
+      created_by
+      created_at
+      engineer
+      id
+      proposal_description
+      engineer_badge_candidature_proposal_responses {
+        disapproval_motivation
+        is_approved
+        proposal_id
+      }
+      user{
+      name
+      }
+      userByEngineer{
+      name
+      }
+    }
+  }
+`;
+
+export const GET_BADGE_CANDIDATURE_REQUESTS = gql`
+ query GetCandidatureRequests($managerId: Int!) {
+  badge_candidature_request(where: {manager_id: {_eq: $managerId}}) {
+    badge_version
+    engineer_id
+    badge_id
+    is_issued
+  }
+}
+`;
+export const GET_PENDING_PROPOSALS = gql`
+mutation GetPendingProposals($managerId: Int!) {
+  get_managers_pending_proposals_for_engineers(args: {managerid: $managerId}) {
+    badge_id
+    badge_version
+    engineer
+  }
+}
+`;
+
+export const GET_ISSUING_REQUESTS_FOR_ENGINEERS = gql`
+query GetIssuingRequests($managerId: Int!) {
+  issuing_requests(where: {badge_candidature_request: {manager_id: {_eq: $managerId}}}) {
+    badge_candidature_request {
+      badge_id
+      badge_version
+      engineer_id
+    }
+    is_approved
+  }
+}
+`;

@@ -2,5 +2,7 @@
 - "!include public_create_badge_version.yaml"
 - "!include public_get_approved_responses_by_manager.yaml"
 - "!include public_get_engineers_by_manager.yaml"
+- "!include public_get_engineers_pending_proposals_for_managers.yaml"
 - "!include public_get_issuing_requests_for_manager.yaml"
+- "!include public_get_managers_pending_proposals_for_engineers.yaml"
 - "!include public_get_pending_proposals_for_engineer.yaml"

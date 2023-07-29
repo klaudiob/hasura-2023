@@ -52,3 +52,19 @@ $$
 LANGUAGE plpgsql;
 
 
+CREATE OR REPLACE FUNCTION get_managers_pending_proposals_for_engineers(managerId INTEGER)
+  RETURNS SETOF manager_to_engineer_badge_candidature_proposals AS
+$$
+BEGIN
+  RETURN QUERY
+    SELECT *
+    FROM manager_to_engineer_badge_candidature_proposals
+    WHERE id NOT IN (
+      SELECT proposal_id
+      FROM engineer_badge_candidature_proposal_response
+    )
+    AND created_by = managerId;
+
+  RETURN;
+END;
+$$ LANGUAGE plpgsql;

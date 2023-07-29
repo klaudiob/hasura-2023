@@ -1,0 +1,8 @@
+function:
+  name: get_engineers_pending_proposals_for_managers
+  schema: public
+configuration:
+  custom_root_fields: {}
+  exposed_as: mutation
+permissions:
+  - role: manager
