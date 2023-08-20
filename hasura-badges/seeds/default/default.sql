@@ -112,8 +112,8 @@ VALUES
 TRUNCATE engineer_to_manager_badge_candidature_proposals RESTART IDENTITY CASCADE;
 INSERT INTO engineer_to_manager_badge_candidature_proposals (manager, badge_id, badge_version, proposal_description, created_by)
 VALUES
-    (1, 1, (SELECT created_at FROM badges_versions WHERE id = 1 LIMIT 1), 'Proposal for badge ID 1, version 1', 2),
-    (1, 2, (SELECT created_at FROM badges_versions WHERE id = 2 LIMIT 1), 'Proposal for badge ID 2, version 1', 2);
+    (6, 1, (SELECT created_at FROM badges_versions WHERE id = 1 LIMIT 1), 'Proposal for badge ID 1, version 1', 2),
+    (6, 2, (SELECT created_at FROM badges_versions WHERE id = 2 LIMIT 1), 'Proposal for badge ID 2, version 1', 2);
 
 
 

@@ -21,7 +21,7 @@ interface User {
   token: string;
 }
 
-const users: User[] = [
+export const users: User[] = [
   {
     id: 3,
     name: "Darth Vaeder",
